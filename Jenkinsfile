@@ -46,10 +46,10 @@ pipeline {
         stage('Tag Docker Image AWS') {
             steps {
                 script {
-                     sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 841162685303.dkr.ecr.region.amazonaws.com"
-                     sh "docker tag latest 841162685303.dkr.ecr.region.amazonaws.com/${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-                     sh "docker tag latest 841162685303.dkr.ecr.region.amazonaws.com/${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-latest"
-                     sh "docker push 841162685303.dkr.ecr.region.amazonaws.com/${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-latest"
+                     sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 841162685303.dkr.ecr.us-east-1.amazonaws.com"
+                     sh "docker tag latest 841162685303.dkr.ecr.us-east-1.amazonaws.com/${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                     sh "docker tag latest 841162685303.dkr.ecr.us-east-1.amazonaws.com/${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-latest"
+                     sh "docker push 841162685303.dkr.ecr.us-east-1.amazonaws.com/${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-latest"
                 }
             } 
         }
