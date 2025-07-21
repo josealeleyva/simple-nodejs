@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_NAME = "lisandrodev/simple-nodejs"
+        DOCKER_IMAGE_NAME = "joseale/simple-nodejs"
         DEPLOY_SERVER = "34.230.73.120"
         DEPLOY_USER = "ubuntu"
     }
@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/LisandroLuna/simple-nodejs.git'
+                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/josealeleyva/simple-nodejs.git'
             }
         }
 
@@ -99,8 +99,8 @@ pipeline {
         always {
             script {
                 try {
-                    sh "sudo docker rmi ${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-                    sh "sudo docker rmi ${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-latest"
+                    sh "docker rmi ${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                    sh "docker rmi ${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-latest"
                 } catch (Exception e) {
                     echo 'Failed to remove Docker image.'
                 }
