@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_NAME = "lisandrodev/simple-nodejs"
+        DOCKER_IMAGE_NAME = "joseale/simple-nodejs-dockerhub"
         DEPLOY_SERVER = "192.168.0.5"
-        DEPLOY_USER = "lisandro"
+        DEPLOY_USER = "jose"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/LisandroLuna/simple-nodejs.git'
+                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/josealeleyva/simple-nodejs.git'
             }
         }
 
