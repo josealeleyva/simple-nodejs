@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_NAME = "joseale/simple-nodejs"
-        DEPLOY_SERVER = "34.230.73.120"
-        DEPLOY_USER = "ubuntu"
+        DOCKER_IMAGE_NAME = 'joseale/simple-nodejs'
+        DEPLOY_SERVER_TEST = '168.197.48.165'
+        DEPLOY_PORT_TEST = '5447'
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
@@ -15,10 +15,10 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            steps { 
+            steps {
                 script {
                     sh "docker build -t ${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-${env.BUILD_NUMBER} ."
-                } 
+                }
             }
         }
 
@@ -40,29 +40,29 @@ pipeline {
                         sh "docker push ${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-latest"
                     }
                 }
-            } 
+            }
         }
-    
+
         stage('Deploy TEST') {
             when {
                 branch 'test'
             }
             steps {
                 script {
-                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-user-aws', keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([usernamePassword(credentialsId: 'JoseServerKey', usernameVariable: 'DEPLOY_USER', passwordVariable: 'DEPLOY_PASS')]) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${DEPLOY_USER}@${DEPLOY_SERVER} bash -c '
-                                docker pull ${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}
-                                docker stop simple-nodejs || true
-                                docker rm simple-nodejs || true
-                                docker run -d --name simple-nodejs -p 3000:3000 ${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}
-                            '
-                        """
+                    sshpass -p "${DEPLOY_PASS}" ssh -p ${DEPLOY_PORT_TEST} -o StrictHostKeyChecking=no ${DEPLOY_USER}@${DEPLOY_SERVER_TEST} bash -c '
+                        docker pull ${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}
+                        docker stop simple-nodejs || true
+                        docker rm simple-nodejs || true
+                        docker run -d --name simple-nodejs -p 3000:3000 ${DOCKER_IMAGE_NAME}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}
+                    '
+                """
                     }
                 }
             }
         }
-        
+
         stage('Deploy Approval') {
             when {
                 branch 'main'
@@ -73,9 +73,9 @@ pipeline {
                 }
             }
         }
-    
-        stage('Deploy PROD') {    
-            when { 
+
+        stage('Deploy PROD') {
+            when {
                 branch 'main'
             }
             steps {
@@ -93,7 +93,7 @@ pipeline {
                 }
             }
         }
-    }   
+    }
 
     post {
         always {
